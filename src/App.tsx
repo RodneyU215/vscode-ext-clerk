@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SignedIn,
   SignedOut,
@@ -7,6 +7,8 @@ import {
   RedirectToSignIn,
   useSession,
   useClerk,
+  useSignIn,
+  SignOutButton,
 } from '@clerk/clerk-react';
 
 function App() {
@@ -25,9 +27,62 @@ function App() {
 
 function SignInPage() {
   const clerk = useClerk();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const { isLoaded, signIn, setActive } = useSignIn();
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  async function submit(e: any) {
+    e.preventDefault();
+    signIn
+      ?.create({
+        identifier: email,
+        password,
+      })
+      .then((result) => {
+        if (result.status === 'complete') {
+          console.log(result);
+          setActive({ session: result.createdSessionId });
+        } else {
+          console.log(result);
+        }
+      })
+      .catch((err) =>
+        console.error('error', err.errors[0].longMessage)
+      );
+  }
 
   return (
-    <button onClick={() => clerk.openSignIn({})}>Sign in</button>
+    <>
+      <button onClick={() => clerk.openSignIn({})}>
+        Sign in via Modal
+      </button>
+      <form onSubmit={submit}>
+        <div>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div>
+          <button>Sign in</button>
+        </div>
+      </form>
+    </>
   );
 }
 
@@ -42,12 +97,12 @@ function Welcome() {
   return (
     <>
       <div>Hello {user.firstName}, welcome to Clerk!</div>
-      <UserButton />
-      {/* <UserButton afterSignOutUrl="/" /> */}
+      <UserButton afterSignOutUrl="/" />
       <p>
         This session has been active since{' '}
         {session?.lastActiveAt.toLocaleString()}
       </p>
+      <SignOutButton />
     </>
   );
 }
