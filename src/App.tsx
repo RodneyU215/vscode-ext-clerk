@@ -58,9 +58,7 @@ function SignInPage() {
 
   return (
     <>
-      <button onClick={() => clerk.openSignIn({})}>
-        Sign in via Modal
-      </button>
+      <h1>Sign in</h1>
       <form onSubmit={submit}>
         <div>
           <label htmlFor="email">Email</label>

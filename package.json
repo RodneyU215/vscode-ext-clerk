@@ -48,6 +48,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@clerk/clerk-js": "^4.67.0",
     "@clerk/clerk-react": "^4.30.0",
     "path-browserify": "^1.0.1",
     "react": "^18.2.0",
